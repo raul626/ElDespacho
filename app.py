@@ -64,7 +64,14 @@ def extract_json(text):
     text = re.sub(r"^```json", "", text)
     text = re.sub(r"^```", "", text)
     text = re.sub(r"```$", "", text)
-    return json.loads(text.strip())
+    text = text.strip()
+    # Tolerar texto antes/despues del JSON: buscar el primer { y el ultimo }
+    start = text.find("{")
+    end = text.rfind("}")
+    if start == -1 or end == -1 or end < start:
+        raise json.JSONDecodeError("No se encontro un objeto JSON valido", text, 0)
+    candidate = text[start:end + 1]
+    return json.loads(candidate)
 
 
 @app.route("/")
@@ -79,7 +86,7 @@ def news_digest():
 
     payload = {
         "model": MODEL,
-        "max_tokens": 4000,
+        "max_tokens": 8000,
         "system": SYSTEM_PROMPT,
         "messages": [{"role": "user", "content": build_user_prompt()}],
         "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 12}],
