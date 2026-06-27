@@ -82,7 +82,7 @@ def news_digest():
         "max_tokens": 4000,
         "system": SYSTEM_PROMPT,
         "messages": [{"role": "user", "content": build_user_prompt()}],
-        "tools": [{"type": "web_search_20250305", "name": "web_search"}],
+        "tools": [{"type": "web_search_20250305", "name": "web_search", "max_uses": 12}],
     }
 
     headers = {
@@ -92,7 +92,7 @@ def news_digest():
     }
 
     try:
-        resp = requests.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=90)
+        resp = requests.post(ANTHROPIC_API_URL, headers=headers, json=payload, timeout=170)
         resp.raise_for_status()
         data = resp.json()
     except requests.RequestException as e:
